@@ -1,0 +1,254 @@
+
+<html>
+    <head>
+        <title>F1 Racing</title>
+    </head>
+
+    <body>
+        <div class="mainContainer">
+            <div id="points">
+                
+            </div> 
+            <div id="raceResults"></div>
+
+            </div>
+    </body>
+<script>
+    var danTeam = [];
+    var tyTeam = [];
+    var kaylaTeam = [];
+    const raceURL = "http://ergast.com/api/f1/2022/10/results.json"
+    var britishGP = [];
+    // const raceURL = "./britishGP.json"
+    // const localSilver = require('./britishGP.json');
+    // console.log(localSilver);
+
+
+
+    async function getAPI(url) {
+        
+        // Storing response
+        const response = await fetch(url);
+        
+        // Storing data in form of JSON
+        var data = await response.json();
+        // console.log(data);
+        if (response) {
+            createFromAPI(data)
+        }
+    }
+
+    getAPI(raceURL);
+
+    function createFromAPI(data){
+        var britishGP = data;
+        
+        console.log(britishGP);
+        console.log(britishGP.MRData.RaceTable.Races[0].Results);
+        console.log(britishGP.MRData.RaceTable.Races[0].RaceName); // this should show name of race
+        // fastest lap is in json "fastestlap.rank will need to create logic to decern"
+    }
+    
+
+    const racer = [
+        {
+            code: "SAI",
+            name: "Carlos Sainz",
+            nationality: "Spanish",
+            construction: "FER",
+            pointsTotal: 0
+        },
+        {
+            code: "LEC",
+            name: "Carles Leclerc",
+            nationality: "Monaco",
+            construction: "FER",
+            pointsTotal: 0
+        },
+        {
+            code: "HAM",
+            name: "Lewis Hamilton",
+            nationality: "English",
+            construction: "MER",
+            pointsTotal: 0
+        },
+        {
+            code: "RUS",
+            name: "George Russel",
+            nationality: "English",
+            construction: "MER",
+            pointsTotal: 0
+        },
+        {
+            code: "VER",
+            name: "Max Verstappen",
+            nationality: "Dutch",
+            construction: "RBR",
+            pointsTotal: 0
+        },
+        {
+            code: "PER",
+            name: "Sergio Perez",
+            nationality: "Mexico",
+            construction: "RBR",
+            pointsTotal: 0
+        }
+    ]
+
+    var scoreSheet = [
+        {
+            position: 1,
+            points: 25
+        },
+        {
+            position: 2,
+            points: 18
+        },
+        {
+            position: 3,
+            points: 15
+        },
+        {
+            position: 4,
+            points: 12
+        },
+        {
+            position: 5,
+            points: 10
+        },
+        {
+            position: 6,
+            points: 8
+        },
+        {
+            position: 7,
+            points: 6
+        },
+        {
+            position: 8,
+            points: 4
+        },
+        {
+            position: 9,
+            points: 2
+        },
+        {
+            position: 10,
+            points: 1
+        },
+    ]
+
+    var silverstone = [
+        {
+        position: 1,
+        driver: "SAI"
+        },
+        {
+        position: 2,
+        driver: "PER"
+        },
+        {
+        position: 3,
+        driver: "HAM"
+        },
+        {
+        position: 4,
+        driver: "LEC"
+        }
+    ]
+
+    var austrian = [
+    {
+        position: 1,
+        driver: "LEC"
+        },
+        {
+        position: 2,
+        driver: "VER"
+        },
+        {
+        position: 3,
+        driver: "HAM"
+        },
+        {
+        position: 4,
+        driver: "RUS"
+        }
+    ]
+
+    console.log(scoreSheet);
+    var Silverstone = []
+    var races = [];
+    raceResultsTable ="";
+
+ 
+    scoreTally(racer, silverstone);
+    scoreTally(racer, austrian);
+    raceResults(racer, silverstone, scoreSheet);
+    raceResults(racer, austrian, scoreSheet);
+
+    function scoreTally(array, race) {
+        for (let i = 0; i < array.length; i++) {
+            // console.log(racer[i]);
+
+            for (let j = 0; j < race.length; j++) {
+                if(race[j].driver === racer[i].code){
+                    tempPointsIndex = race[j].position - 1
+                    console.log(scoreSheet[tempPointsIndex].points);
+                    racer[i].pointsTotal =+ scoreSheet[tempPointsIndex].points
+
+                    console.log(racer[i].name, "came in", race[j].position, "they have", racer[i].points);
+                }
+                
+            }
+            
+        }
+    }
+
+    function raceResults(array, race, scoreSheet){
+        const element = document.getElementById("raceResults");
+        
+
+        for (let k = 0; k < silverstone.length; k++) {
+            if(k === 0){
+                raceResultsTable += ` 
+                    <table>
+                    <tr>
+                        <th>name</th>
+                        <th>place</th>
+                        <th>points</th>
+                    </tr>`
+            }
+            else{}
+            raceResultsTable += `<tr>
+                        <td>${race[k].driver}</td>
+                        <td>${k+1}</td>
+                        <td>${scoreSheet[k].points}</td>
+                        </tr>`
+            
+        }
+        element.innerHTML = `
+                    ${raceResultsTable}
+                    </table>`
+
+    }
+
+    kaylaTeam.push(racer[0]);
+    kaylaTeam.push(racer[3]);
+    danTeam.push(racer[4]);
+    danTeam.push(racer[5]);
+    tyTeam.push(racer[1]);
+    tyTeam.push(racer[2]);
+    var kaylaPoints = kaylaTeam[0].pointsTotal + kaylaTeam[1].pointsTotal;
+    var danPoints = danTeam[0].pointsTotal + danTeam[1].pointsTotal;
+    var tyPoints = tyTeam[0].pointsTotal + tyTeam[1].pointsTotal;
+    
+    console.log("Kayla's team points: ", kaylaPoints);
+    console.log("Dan's team points: ", danPoints);
+    console.log("Tyler's team points: ",tyPoints);
+    // console.log(racer[0].code);
+    // console.log(racer[0].pointsTotal);
+    
+</script>
+
+</html>
