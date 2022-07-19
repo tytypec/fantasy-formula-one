@@ -17,37 +17,68 @@
     var danTeam = [];
     var tyTeam = [];
     var kaylaTeam = [];
-    const raceURL = "http://ergast.com/api/f1/2022/10/results.json"
-    var britishGP = [];
-    // const raceURL = "./britishGP.json"
-    // const localSilver = require('./britishGP.json');
-    // console.log(localSilver);
+    
+    var myStuff = {
+        seasonRaces: [],
+        amountOfRaces: 23,
 
-
-
-    async function getAPI(url) {
-        
-        // Storing response
-        const response = await fetch(url);
-        
-        // Storing data in form of JSON
-        var data = await response.json();
-        // console.log(data);
-        if (response) {
-            createFromAPI(data)
-        }
+    };
+    //starting point for app
+    async function main(){
+        await getRaces();
+        console.log(myStuff.seasonRaces);
+        raceResults(racer, myStuff.seasonRaces, scoreSheet);
     }
 
-    getAPI(raceURL);
+    main()
 
-    function createFromAPI(data){
-        var britishGP = data;
-        
-        console.log(britishGP);
-        console.log(britishGP.MRData.RaceTable.Races[0].Results);
-        console.log(britishGP.MRData.RaceTable.Races[0].RaceName); // this should show name of race
-        // fastest lap is in json "fastestlap.rank will need to create logic to decern"
+    async function getRaces(){
+        for (let m = 10; m <= myStuff.amountOfRaces; m++) { // 23 races in the season.
+            const raceURL = `http://ergast.com/api/f1/2022/${m}/results.json`
+            var response = await fetch(raceURL)
+            // var race = await getAPI(raceURL);
+            var fullDetailRace = await response.json();
+            console.log(fullDetailRace);
+            if(!fullDetailRace || fullDetailRace.MRData.RaceTable.Races.length === 0){return}
+            var race = fullDetailRace.MRData.RaceTable.Races[0];
+            if(race){
+                myStuff.seasonRaces.push(race);
+            }
+            // if(!race){return;} 
+            // myStuff.seasonRaces.push(race);
+        } 
     }
+
+    // async function getAPI(url) {
+        
+    //     // Storing response
+    //     const response = await fetch(url);
+        
+    //     // Storing data in form of JSON
+    //     var data = await response.json();
+    //     // console.log(data);
+    //     if (response) {
+    //         // createFromAPI(data, m)
+    //         console.log("data",data.MRData.RaceTable.Races[0]);
+    //         seasonRaces.push(data.MRData.RaceTable.Races[0])
+    //     }
+    // }
+
+    // getAPI(raceURL);
+
+    // function createFromAPI(data, raceNumber){
+    //     console.log("#", data);
+        
+        
+    //     // var britishGP = data;
+        
+    //     // console.log(britishGP);
+    //     // console.log(britishGP.MRData.RaceTable.Races[0].Results);
+    //     // console.log(britishGP.MRData.RaceTable.Races[0].raceName); // this should show name of race
+    //     // fastest lap is in json "fastestlap.rank will need to create logic to decern"
+    //     // console.log(seasonRaces);
+    // }
+    
     
 
     const racer = [
@@ -138,43 +169,43 @@
         },
     ]
 
-    var silverstone = [
-        {
-        position: 1,
-        driver: "SAI"
-        },
-        {
-        position: 2,
-        driver: "PER"
-        },
-        {
-        position: 3,
-        driver: "HAM"
-        },
-        {
-        position: 4,
-        driver: "LEC"
-        }
-    ]
+    // var silverstone = [
+    //     {
+    //     position: 1,
+    //     driver: "SAI"
+    //     },
+    //     {
+    //     position: 2,
+    //     driver: "PER"
+    //     },
+    //     {
+    //     position: 3,
+    //     driver: "HAM"
+    //     },
+    //     {
+    //     position: 4,
+    //     driver: "LEC"
+    //     }
+    // ]
 
-    var austrian = [
-    {
-        position: 1,
-        driver: "LEC"
-        },
-        {
-        position: 2,
-        driver: "VER"
-        },
-        {
-        position: 3,
-        driver: "HAM"
-        },
-        {
-        position: 4,
-        driver: "RUS"
-        }
-    ]
+    // var austrian = [
+    // {
+    //     position: 1,
+    //     driver: "LEC"
+    //     },
+    //     {
+    //     position: 2,
+    //     driver: "VER"
+    //     },
+    //     {
+    //     position: 3,
+    //     driver: "HAM"
+    //     },
+    //     {
+    //     position: 4,
+    //     driver: "RUS"
+    //     }
+    // ]
 
     console.log(scoreSheet);
     var Silverstone = []
@@ -182,12 +213,12 @@
     raceResultsTable ="";
 
  
-    scoreTally(racer, silverstone);
-    scoreTally(racer, austrian);
-    raceResults(racer, silverstone, scoreSheet);
-    raceResults(racer, austrian, scoreSheet);
+    // scoreTally(racer, silverstone);
+    // scoreTally(racer, austrian);
 
-    function scoreTally(array, race) {
+    
+
+    function qualifyingScoreTally(scoreSheet) {
         for (let i = 0; i < array.length; i++) {
             // console.log(racer[i]);
 
@@ -205,32 +236,73 @@
         }
     }
 
+    
+    
+
     function raceResults(array, race, scoreSheet){
+        
         const element = document.getElementById("raceResults");
         
-
-        for (let k = 0; k < silverstone.length; k++) {
-            if(k === 0){
-                raceResultsTable += ` 
-                    <table>
-                    <tr>
-                        <th>name</th>
-                        <th>place</th>
-                        <th>points</th>
-                    </tr>`
-            }
-            else{}
-            raceResultsTable += `<tr>
-                        <td>${race[k].driver}</td>
-                        <td>${k+1}</td>
-                        <td>${scoreSheet[k].points}</td>
-                        </tr>`
+        //For loop that counts how many races have happened in our season
+        for (let n = 0; n <= myStuff.seasonRaces.length ; n++) {
             
-        }
-        element.innerHTML = `
-                    ${raceResultsTable}
-                    </table>`
+            // creates table for GrandPrix
+            for (let k = 0; k < myStuff.seasonRaces[n].Results.length; k++) {
+                var raceName = myStuff.seasonRaces[n].raceName;
+                var name = myStuff.seasonRaces[n].Results[k].Driver.code;
+                var points = myStuff.seasonRaces[n].Results[k].points;
+                var gridPosition = myStuff.seasonRaces[n].Results[k].grid;
+                // var qualPoints = gridPoints()
+                // console.log(gridPoints());
+                
+                function gridPoints() { //scoreSheet.length
+                    for (let o = 0; o < scoreSheet.length; o++) {
+                        if(scoreSheet[o].position == gridPosition){ 
+                            var qualifyingPoints = scoreSheet[o].points
+                            return qualifyingPoints;
+                        }
+                        else if (gridPosition > 10 || gridPosition == 0){
+                            return 0;
+                        }
+                    }
+                }
 
+                if(k === 0){
+                    raceResultsTable += `
+                         
+                        <table BORDER=2>
+                            ${raceName} <BR>
+                        <tr>
+                            <th>Driver Code</th>
+                            <th>Race Place</th>
+                            <th>Race Points</th>
+                            <th>Grid Position</th>
+                            <th>Qualifying Points</th>
+                        </tr>`
+                    raceResultsTable += `<tr>
+                        <td>${name}</td>
+                        <td>${k+1}</td>
+                        <td>${points}</td>
+                        <td>${gridPosition}</td>
+                        <td>${gridPoints()}</td>
+                        </tr>`
+                }
+                else{  
+                    raceResultsTable += `<tr>
+                            <td>${name}</td>
+                            <td>${k+1}</td>
+                            <td>${points}</td>
+                            <td>${gridPosition}</td>
+                            <td>${gridPoints()}</td>
+                            </tr>`
+                }
+                
+            }
+            element.innerHTML = `
+                        ${raceResultsTable}
+                        </table>`
+
+        }
     }
 
     kaylaTeam.push(racer[0]);
