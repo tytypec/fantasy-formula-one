@@ -7,15 +7,7 @@
     <body>
         <div class="mainContainer">
             <div id="teamPoints">
-                <table BORDER=2>
-                    <tr>
-                        <th>Team Name</th>
-                        <th>Total Points</th>
-                    </tr>
-                    <tr>
-                        <td>${name}</td>
-                        <td>Race Name</td>
-                    </tr>
+
             </div>
 
             <div id="driverPoints">
@@ -48,17 +40,25 @@
             </div>
     </body>
 <script>
-    var danTeam = [];
-    var tyTeam = [];
-    var kaylaTeam = [];
+    raceResultsTable ="";
+    teamPointsTable="";
     
     var myStuff = {
         seasonRaces: [],
         amountOfRaces: 23,
         topTeams: [
-        danTopTeam = [],  
-        tyTopTeam = [],
-        kaylaTopTeam = [],
+        danTopTeam = {
+            teamTotalPoints: 0,
+            raceResults: [],
+        },  
+        tyTopTeam = {
+            teamTotalPoints: 0,
+            raceResults: [],
+        },
+        kaylaTopTeam = {
+            teamTotalPoints: 0,
+            raceResults: [],
+        },
         ],
         // danTopTeam: [],
         // tyTopTeam: [],
@@ -71,8 +71,9 @@
     //starting point for app
     async function main(){
         await getRaces();
-        console.log(myStuff.seasonRaces);
+        // console.log(myStuff.seasonRaces);
         raceResults(racer, myStuff.seasonRaces, scoreSheet);
+        pointsAdder();
     }
 
     main()
@@ -83,7 +84,7 @@
             var response = await fetch(raceURL)
             // var race = await getAPI(raceURL);
             var fullDetailRace = await response.json();
-            console.log(fullDetailRace);
+            // console.log(fullDetailRace);
             if(!fullDetailRace || fullDetailRace.MRData.RaceTable.Races.length === 0){return}
             var race = fullDetailRace.MRData.RaceTable.Races[0];
             if(race){
@@ -225,15 +226,14 @@
     // console.log(scoreSheet);
     var Silverstone = []
     var races = [];
-    raceResultsTable ="";
+
 
     
     
-    function raceResults(array, race, scoreSheet){
+    async function raceResults(array, race, scoreSheet){
         
         const element = document.getElementById("raceResults");
-        console.log(myStuff);
-        pointsAdder();
+        // console.log(myStuff);
         //For loop that counts how many races have happened in our season
         for (let n = 0; n <= myStuff.seasonRaces.length ; n++) {
             
@@ -243,24 +243,26 @@
                 var raceName = myStuff.seasonRaces[n].raceName;
                 var driverName = myStuff.seasonRaces[n].Results[k].Driver.givenName + " " + myStuff.seasonRaces[n].Results[k].Driver.familyName
                 var name = myStuff.seasonRaces[n].Results[k].Driver.code;
-                var points = myStuff.seasonRaces[n].Results[k].points;
+                var points = parseInt(myStuff.seasonRaces[n].Results[k].points);
                 var gridPosition = myStuff.seasonRaces[n].Results[k].grid;
+                var weekendPoints = points + gridPoints();
                 
                 // dans top team VER PER Ty Top HAM LEC Kay RUS SAI
                 if(name === "VER" || name === "PER"){
                     var playerName = "Dan"
-                    addDriverToTeam(myStuff.topTeams[0])
+                    addDriverToTeam(myStuff.topTeams[0].raceResults)
                 }
                 if(name === "HAM" || name === "LEC"){
                     var playerName = "Tyler"
-                    addDriverToTeam(myStuff.topTeams[1])
+                    addDriverToTeam(myStuff.topTeams[1].raceResults)
                 }
                 if(name === "RUS" || name === "SAI"){
                     var playerName = "Kayla"
-                    addDriverToTeam(myStuff.topTeams[2])   
+                    addDriverToTeam(myStuff.topTeams[2].raceResults)   
                 }
 
                 function addDriverToTeam(team){
+                     
                     var teamDriver = {
                         playerName:playerName,
                         race: raceName,
@@ -268,7 +270,8 @@
                         code: name,
                         racePoints: points,
                         gridPosition: gridPosition,
-                        gridPoints: gridPoints()
+                        gridPoints: gridPoints(),
+                        totalWeekendPoints: weekendPoints
                     }
                     team.push(teamDriver)
                     // console.log(team);
@@ -324,22 +327,41 @@
                         </table>`
 
         }
+
+        return
     }
 
     function pointsAdder(){
-        myStuff.topTeams[0]
+        const element = document.getElementById("teamPoints")
 
+        console.log("above", myStuff.topTeams[2].raceResults);
+        
+        myStuff.topTeams.forEach(function(item,p) {
+            for (let q = 0; q < myStuff.topTeams[p].raceResults.length; q++) {
+                myStuff.topTeams[p].teamTotalPoints += myStuff.topTeams[p].raceResults[q].totalWeekendPoints;  
+            }
 
+            teamPointsTable +=
+            `<tr>
+                <td>${myStuff.topTeams[p].raceResults[0].playerName}</td>
+                <td>${myStuff.topTeams[p].teamTotalPoints}</td>
+            </tr>`
+            
+        });
+        console.log(myStuff.topTeams); 
+
+            element.innerHTML = `
+                <table BORDER=2>
+                    <tr>
+                        <th>Team Name</th>
+                        <th>Total Points</th>
+                    </tr>
+                ${teamPointsTable}
+                </table>`
     }
 
 
-    var kaylaPoints = kaylaTeam[0].pointsTotal + kaylaTeam[1].pointsTotal;
-    var danPoints = danTeam[0].pointsTotal + danTeam[1].pointsTotal;
-    var tyPoints = tyTeam[0].pointsTotal + tyTeam[1].pointsTotal;
-    
-    console.log("Kayla's team points: ", kaylaPoints);
-    console.log("Dan's team points: ", danPoints);
-    console.log("Tyler's team points: ",tyPoints);
+
     // console.log(racer[0].code);
     // console.log(racer[0].pointsTotal);
     
