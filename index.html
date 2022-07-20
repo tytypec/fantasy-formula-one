@@ -6,11 +6,45 @@
 
     <body>
         <div class="mainContainer">
-            <div id="points">
-                
-            </div> 
-            <div id="raceResults"></div>
+            <div id="teamPoints">
+                <table BORDER=2>
+                    <tr>
+                        <th>Team Name</th>
+                        <th>Total Points</th>
+                    </tr>
+                    <tr>
+                        <td>${name}</td>
+                        <td>Race Name</td>
+                    </tr>
+            </div>
 
+            <div id="driverPoints">
+                <table BORDER=2>
+                <tr>
+                    <th>Driver Name</th>
+                    <th>Race Name</th>
+                    <th>Race Place</th>
+                    <th>Race Points</th>
+                    <th>Grid Position</th>
+                    <th>Qualifying Points</th>
+                    <th>total Points</th>
+
+                </tr>
+                <tr>
+                <td>${name}</td>
+                <td>Race Name</td>
+                <td>${points}</td>
+                <td>${gridPosition}</td>
+                <td>${gridPoints()}</td>
+                <td>${gridPoints()}</td>
+                <td>${gridPoints()}</td>
+                </tr>
+                
+            </div>
+
+            <div class="resultsContainer">
+                <div id="raceResults"></div>
+            </div>
             </div>
     </body>
 <script>
@@ -21,8 +55,19 @@
     var myStuff = {
         seasonRaces: [],
         amountOfRaces: 23,
-
+        topTeams: [
+        danTopTeam = [],  
+        tyTopTeam = [],
+        kaylaTopTeam = [],
+        ],
+        // danTopTeam: [],
+        // tyTopTeam: [],
+        // kaylaTopTeam: [],
+        // danBottomTeam: [],
+        // tyBottomTeam: [],
+        // kaylaBottomTeam: [],
     };
+
     //starting point for app
     async function main(){
         await getRaces();
@@ -48,36 +93,6 @@
             // myStuff.seasonRaces.push(race);
         } 
     }
-
-    // async function getAPI(url) {
-        
-    //     // Storing response
-    //     const response = await fetch(url);
-        
-    //     // Storing data in form of JSON
-    //     var data = await response.json();
-    //     // console.log(data);
-    //     if (response) {
-    //         // createFromAPI(data, m)
-    //         console.log("data",data.MRData.RaceTable.Races[0]);
-    //         seasonRaces.push(data.MRData.RaceTable.Races[0])
-    //     }
-    // }
-
-    // getAPI(raceURL);
-
-    // function createFromAPI(data, raceNumber){
-    //     console.log("#", data);
-        
-        
-    //     // var britishGP = data;
-        
-    //     // console.log(britishGP);
-    //     // console.log(britishGP.MRData.RaceTable.Races[0].Results);
-    //     // console.log(britishGP.MRData.RaceTable.Races[0].raceName); // this should show name of race
-    //     // fastest lap is in json "fastestlap.rank will need to create logic to decern"
-    //     // console.log(seasonRaces);
-    // }
     
     
 
@@ -207,59 +222,65 @@
     //     }
     // ]
 
-    console.log(scoreSheet);
+    // console.log(scoreSheet);
     var Silverstone = []
     var races = [];
     raceResultsTable ="";
 
- 
-    // scoreTally(racer, silverstone);
-    // scoreTally(racer, austrian);
-
-    
-
-    function qualifyingScoreTally(scoreSheet) {
-        for (let i = 0; i < array.length; i++) {
-            // console.log(racer[i]);
-
-            for (let j = 0; j < race.length; j++) {
-                if(race[j].driver === racer[i].code){
-                    tempPointsIndex = race[j].position - 1
-                    console.log(scoreSheet[tempPointsIndex].points);
-                    racer[i].pointsTotal =+ scoreSheet[tempPointsIndex].points
-
-                    console.log(racer[i].name, "came in", race[j].position, "they have", racer[i].points);
-                }
-                
-            }
-            
-        }
-    }
-
     
     
-
     function raceResults(array, race, scoreSheet){
         
         const element = document.getElementById("raceResults");
-        
+        console.log(myStuff);
+        pointsAdder();
         //For loop that counts how many races have happened in our season
         for (let n = 0; n <= myStuff.seasonRaces.length ; n++) {
             
             // creates table for GrandPrix
             for (let k = 0; k < myStuff.seasonRaces[n].Results.length; k++) {
+
                 var raceName = myStuff.seasonRaces[n].raceName;
+                var driverName = myStuff.seasonRaces[n].Results[k].Driver.givenName + " " + myStuff.seasonRaces[n].Results[k].Driver.familyName
                 var name = myStuff.seasonRaces[n].Results[k].Driver.code;
                 var points = myStuff.seasonRaces[n].Results[k].points;
                 var gridPosition = myStuff.seasonRaces[n].Results[k].grid;
+                
+                // dans top team VER PER Ty Top HAM LEC Kay RUS SAI
+                if(name === "VER" || name === "PER"){
+                    var playerName = "Dan"
+                    addDriverToTeam(myStuff.topTeams[0])
+                }
+                if(name === "HAM" || name === "LEC"){
+                    var playerName = "Tyler"
+                    addDriverToTeam(myStuff.topTeams[1])
+                }
+                if(name === "RUS" || name === "SAI"){
+                    var playerName = "Kayla"
+                    addDriverToTeam(myStuff.topTeams[2])   
+                }
+
+                function addDriverToTeam(team){
+                    var teamDriver = {
+                        playerName:playerName,
+                        race: raceName,
+                        driverName: driverName,
+                        code: name,
+                        racePoints: points,
+                        gridPosition: gridPosition,
+                        gridPoints: gridPoints()
+                    }
+                    team.push(teamDriver)
+                    // console.log(team);
+                }
                 // var qualPoints = gridPoints()
                 // console.log(gridPoints());
                 
                 function gridPoints() { //scoreSheet.length
                     for (let o = 0; o < scoreSheet.length; o++) {
                         if(scoreSheet[o].position == gridPosition){ 
-                            var qualifyingPoints = scoreSheet[o].points
-                            return qualifyingPoints;
+                            // var qualifyingPoints = scoreSheet[o].points
+                            return scoreSheet[o].points;
                         }
                         else if (gridPosition > 10 || gridPosition == 0){
                             return 0;
@@ -305,12 +326,13 @@
         }
     }
 
-    kaylaTeam.push(racer[0]);
-    kaylaTeam.push(racer[3]);
-    danTeam.push(racer[4]);
-    danTeam.push(racer[5]);
-    tyTeam.push(racer[1]);
-    tyTeam.push(racer[2]);
+    function pointsAdder(){
+        myStuff.topTeams[0]
+
+
+    }
+
+
     var kaylaPoints = kaylaTeam[0].pointsTotal + kaylaTeam[1].pointsTotal;
     var danPoints = danTeam[0].pointsTotal + danTeam[1].pointsTotal;
     var tyPoints = tyTeam[0].pointsTotal + tyTeam[1].pointsTotal;
