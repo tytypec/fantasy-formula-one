@@ -6,8 +6,16 @@
 
     <body>
         <div class="mainContainer">
-            <div id="teamPoints">
+            <div class="topTeamScores">
+                Top Constructions
+                <div id="topTeamPoints">
+                </div>
+            </div>
 
+            <div class="bottomTeamScores">
+                Bottom Constructions
+                <div id="bottomTeamPoints">
+                </div>
             </div>
 
             <div id="driverPoints">
@@ -19,7 +27,7 @@
                     <th>Race Points</th>
                     <th>Grid Position</th>
                     <th>Qualifying Points</th>
-                    <th>total Points</th>
+                    <th>Total Points</th>
 
                 </tr>
                 <tr>
@@ -41,39 +49,58 @@
     </body>
 <script>
     raceResultsTable ="";
-    teamPointsTable="";
+    teamTopPointsTable="";
+    teamBottomPointsTable="";
+    pointBreakDownTable="";
     
     var myStuff = {
         seasonRaces: [],
         amountOfRaces: 23,
+        leagueIdentificationNumber: 0001,
         topTeams: [
         danTopTeam = {
             teamTotalPoints: 0,
             raceResults: [],
+            driverNames: [],
         },  
         tyTopTeam = {
             teamTotalPoints: 0,
             raceResults: [],
+            driverNames: [],
         },
         kaylaTopTeam = {
             teamTotalPoints: 0,
             raceResults: [],
+            driverNames: [],
         },
         ],
-        // danTopTeam: [],
-        // tyTopTeam: [],
-        // kaylaTopTeam: [],
-        // danBottomTeam: [],
-        // tyBottomTeam: [],
-        // kaylaBottomTeam: [],
+        bottomTeams: [
+        danBottomTeam = {
+            teamTotalPoints: 0,
+            raceResults: [],
+            driverNames: [],
+        },  
+        tyBottomTeam = {
+            teamTotalPoints: 0,
+            raceResults: [],
+            driverNames: [],
+        },
+        kaylaBottomTeam = {
+            teamTotalPoints: 0,
+            raceResults: [],
+            driverNames: [],
+        },
+        ],
     };
 
     //starting point for app
     async function main(){
+        // Want to add function that stores api data in local storage/checks if its been update
         await getRaces();
         // console.log(myStuff.seasonRaces);
         raceResults(racer, myStuff.seasonRaces, scoreSheet);
-        pointsAdder();
+        topPointsAdder();
+        teamDriveBreakDown();
     }
 
     main()
@@ -261,6 +288,20 @@
                     addDriverToTeam(myStuff.topTeams[2].raceResults)   
                 }
 
+                //dans bottom NOR VET Ty BOT RIC Kay ALO TSU
+                if(name === "NOR" || name === "VET"){
+                    var playerName = "Dan"
+                    addDriverToTeam(myStuff.bottomTeams[0].raceResults)
+                }
+                if(name === "BOT" || name === "RIC"){
+                    var playerName = "Tyler"
+                    addDriverToTeam(myStuff.bottomTeams[1].raceResults)
+                }
+                if(name === "ALO" || name === "TSU"){
+                    var playerName = "Kayla"
+                    addDriverToTeam(myStuff.bottomTeams[2].raceResults)   
+                }
+
                 function addDriverToTeam(team){
                      
                     var teamDriver = {
@@ -302,6 +343,7 @@
                             <th>Race Points</th>
                             <th>Grid Position</th>
                             <th>Qualifying Points</th>
+                            <th>Weekend Points</th>
                         </tr>`
                     raceResultsTable += `<tr>
                         <td>${name}</td>
@@ -309,6 +351,7 @@
                         <td>${points}</td>
                         <td>${gridPosition}</td>
                         <td>${gridPoints()}</td>
+                        <td>${weekendPoints}</td>
                         </tr>`
                 }
                 else{  
@@ -318,6 +361,7 @@
                             <td>${points}</td>
                             <td>${gridPosition}</td>
                             <td>${gridPoints()}</td>
+                            <td>${weekendPoints}</td>
                             </tr>`
                 }
                 
@@ -331,23 +375,38 @@
         return
     }
 
-    function pointsAdder(){
-        const element = document.getElementById("teamPoints")
+    function topPointsAdder(){
+        const element = document.getElementById("topTeamPoints")
+        const bottomElement = document.getElementById("bottomTeamPoints")
 
-        console.log("above", myStuff.topTeams[2].raceResults);
+        console.log("above", myStuff);
         
         myStuff.topTeams.forEach(function(item,p) {
             for (let q = 0; q < myStuff.topTeams[p].raceResults.length; q++) {
                 myStuff.topTeams[p].teamTotalPoints += myStuff.topTeams[p].raceResults[q].totalWeekendPoints;  
             }
 
-            teamPointsTable +=
+            teamTopPointsTable +=
             `<tr>
-                <td>${myStuff.topTeams[p].raceResults[0].playerName}</td>
+                <td>${myStuff.topTeams[p].raceResults[0].playerName}'s Team</td>
                 <td>${myStuff.topTeams[p].teamTotalPoints}</td>
             </tr>`
             
         });
+
+        myStuff.bottomTeams.forEach(function(item,p) {
+            for (let q = 0; q < myStuff.bottomTeams[p].raceResults.length; q++) {
+                myStuff.bottomTeams[p].teamTotalPoints += myStuff.bottomTeams[p].raceResults[q].totalWeekendPoints;  
+            }
+
+            teamBottomPointsTable +=
+            `<tr>
+                <td>${myStuff.bottomTeams[p].raceResults[0].playerName}'s Team</td>
+                <td>${myStuff.bottomTeams[p].teamTotalPoints}</td>
+            </tr>`
+            
+        });
+
         console.log(myStuff.topTeams); 
 
             element.innerHTML = `
@@ -356,8 +415,44 @@
                         <th>Team Name</th>
                         <th>Total Points</th>
                     </tr>
-                ${teamPointsTable}
+                ${teamTopPointsTable}
                 </table>`
+
+                bottomElement.innerHTML = `
+                <table BORDER=2>
+                    <tr>
+                        <th>Team Name</th>
+                        <th>Total Points</th>
+                    </tr>
+                ${teamBottomPointsTable}
+                </table>`
+    }
+
+    function teamDriveBreakDown(){
+        
+        function compare(a,b){
+            const aCode = a.code
+            const bCode = b.code
+            let comparison = 0;
+            if (a.code > b.code){
+            comparison = 1;   
+            }
+            else if(a.code < b.code){
+            comparison = -1;   
+            }
+            return comparison;
+        };
+
+        
+        console.log("sort",myStuff.topTeams[0].raceResults.sort(compare));
+        myStuff.topTeams.forEach(function(item,r) {
+            myStuff.topTeams[r].raceResults.sort(compare) 
+            myStuff.topTeams[r].raceResults.forEach(function(item,s) {
+                  
+                // pointBreakDownTable += 
+        });
+        });
+        
     }
 
 
