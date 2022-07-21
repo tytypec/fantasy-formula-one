@@ -104,6 +104,7 @@
     var myStuff = {
         seasonRaces: [],
         amountOfRaces: 23,
+        currentRound: 10,
         leagueIdentificationNumber: 0001,
         topTeams: [
             {
@@ -147,6 +148,7 @@
     //starting point for app
     async function main(){
         // Want to add function that stores api data in local storage/checks if its been update
+        // await localStorageOnLoad();
         await getRaces();
         // console.log(myStuff.seasonRaces);
         raceResults(racer, myStuff.seasonRaces, scoreSheet);
@@ -156,20 +158,48 @@
 
     main()
 
+    // async function localStorageOnLoad(){
+    //     if (localStorage.getItem('raceData') == null) {
+    //         await getRaces();
+    //         localStorage.setItem('raceData', JSON.stringify(myStuff.seasonRaces));            
+    //     }
+    //     else {
+    //         console.log("loading from local storage")
+    //         await getRaces();
+    //         myStuff.seasonRaces = JSON.parse(localStorage.getItem('raceData'));
+    //     }
+    // }
+
+    // localStorage.setItem('customsTextValues', JSON.stringify(locations));
+    // if (localStorage.getItem('customsTextValues') == null) {
+    //         var locations = [];
+    //     }
+    //     else {
+    //         console.log("loading from local storage")
+    //         locations = JSON.parse(localStorage.getItem('customsTextValues'));
+    //         //drawLocation("initialLoad");
+    //     }
+
     async function getRaces(){
         for (let m = 10; m <= myStuff.amountOfRaces; m++) { // 23 races in the season.
+        // for (let m = 0; m <= 23 ; m++) { // 23 races in the season.
             const raceURL = `http://ergast.com/api/f1/2022/${m}/results.json`
             var response = await fetch(raceURL)
             // var race = await getAPI(raceURL);
+            //check the round, if the round is higher than the last round we saved update the
+            // local storage and change the round to currentround
             var fullDetailRace = await response.json();
-            // console.log(fullDetailRace);
+
             if(!fullDetailRace || fullDetailRace.MRData.RaceTable.Races.length === 0){return}
             var race = fullDetailRace.MRData.RaceTable.Races[0];
+
+            console.log(fullDetailRace);
+            console.log(fullDetailRace.MRData.RaceTable.round);
+            // if(!race){return;} 
+            // myStuff.seasonRaces.push(race);
             if(race){
                 myStuff.seasonRaces.push(race);
             }
-            // if(!race){return;} 
-            // myStuff.seasonRaces.push(race);
         } 
     }
     
@@ -492,25 +522,26 @@
     function teamDriveBreakDown(){
         const element = document.getElementById("driverPoints")
         
-        function compare(a,b){
-            const aCode = a.code
-            const bCode = b.code
-            let comparison = 0;
-            if (a.code > b.code){
-            comparison = 1;   
-            }
-            else if(a.code < b.code){
-            comparison = -1;   
-            }
-            return comparison;
-        };
+        // function compare(a,b){
+        //     const aCode = a.code
+        //     const bCode = b.code
+        //     let comparison = 0;
+        //     if (a.code > b.code){
+        //     comparison = 1;   
+        //     }
+        //     else if(a.code < b.code){
+        //     comparison = -1;   
+        //     }
+        //     return comparison;
+        // };
 
         
         // console.log("sort",myStuff.topTeams[0].raceResults.sort(compare));
         let memo = {};
 
         myStuff.topTeams.forEach(function(team){
-            //  console.log("CURRENT TEAM"); 
+             console.log(team); 
+
             team.raceResults.forEach(function(result){
                 // console.log("RACE RESULT");
                 // console.log(result.code);
@@ -527,7 +558,7 @@
                 memo[result.code].push(result);
 
             });
-
+            driverScoreCard += `<div>${team.name}</div>`
             // for (var code in memo) {
 
             // //  console.log(`${code}: ${memo[code]}`);
@@ -602,7 +633,7 @@
             driverScoreCard += 
             ` 
             <table BORDER=2>
-            <caption>Team Name</caption>
+            <caption></caption>
             <thead>
                 <tr>
                 <td colspan="2">
