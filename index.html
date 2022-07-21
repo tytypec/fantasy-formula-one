@@ -20,14 +20,60 @@
 
             <div id="driverPoints">
                 <table BORDER=2>
+                    <caption>Team Name</caption>
+                    <thead>
+                     <tr>
+                      <td colspan="2">
+                       <strong>Name</strong><br>
+                       Construction<br>
+                       nationality<br>
+                      </td>
+                      <td colspan="2">
+                        <img src="./images/LEC.png" alt="errorloading">
+                      </td>
+                     </tr>
+                    </thead>
+                    <tbody>
+                     <tr>
+                        <th>Race Name</th>
+                        <th>Race Place</th>
+                        <th>Race Points</th>
+                        <th>Grid Position</th>
+                        <th>Qualifying Points</th>
+                     </tr>
+                     <tr>
+                        <th>###</th>
+                        <th>5</th>
+                        <th>Race Points</th>
+                        <th>Grid Position</th>
+                        <th>Qualifying Points</th>
+                     </tr>
+                     <tr>
+                        <th>Race Name</th>
+                        <th>Race Place</th>
+                        <th>Race Points</th>
+                        <th>Grid Position</th>
+                        <th>Qualifying Points</th>
+                     </tr>
+                    </tbody>
+                    <tfoot>
+                     <tr>
+                      <th colspan="3">Grand Total</th>
+                      <td>Driver total points</td>
+                     </tr>
+                    </tfoot>
+                   </table>
+                <!--    
+                <table BORDER=2>
                 <tr>
-                    <th>Driver Name</th>
-                    <th>Race Name</th>
-                    <th>Race Place</th>
-                    <th>Race Points</th>
-                    <th>Grid Position</th>
-                    <th>Qualifying Points</th>
-                    <th>Total Points</th>
+                <th>Driver Name</th>
+                <th>Race Name</th>
+                <th>Race Place</th>
+                <th>Race Points</th>
+                <th>Grid Position</th>
+                <th>Qualifying Points</th>
+                <th>Total Points</th>
+                </tr>`
 
                 </tr>
                 <tr>
@@ -38,58 +84,61 @@
                 <td>${gridPoints()}</td>
                 <td>${gridPoints()}</td>
                 <td>${gridPoints()}</td>
-                </tr>
+                </tr> -->
                 
             </div>
+           
 
             <div class="resultsContainer">
                 <div id="raceResults"></div>
             </div>
-            </div>
+        </div>
     </body>
 <script>
     raceResultsTable ="";
     teamTopPointsTable="";
     teamBottomPointsTable="";
-    pointBreakDownTable="";
+    driverScoreCard="";
+    var wasCardMade = false;
     
     var myStuff = {
         seasonRaces: [],
         amountOfRaces: 23,
         leagueIdentificationNumber: 0001,
         topTeams: [
-        danTopTeam = {
-            teamTotalPoints: 0,
-            raceResults: [],
-            driverNames: [],
-        },  
-        tyTopTeam = {
-            teamTotalPoints: 0,
-            raceResults: [],
-            driverNames: [],
-        },
-        kaylaTopTeam = {
-            teamTotalPoints: 0,
-            raceResults: [],
-            driverNames: [],
-        },
+            {
+                name: "Cotton Candy Dan",
+                teamTotalPoints: 0,
+                raceResults: [],
+                driverNames: [],
+            },  
+            {
+                teamTotalPoints: 0,
+                raceResults: [],
+                driverNames: [],
+            },
+            {
+                teamTotalPoints: 0,
+                raceResults: [],
+                driverNames: [],
+            },
         ],
         bottomTeams: [
-        danBottomTeam = {
-            teamTotalPoints: 0,
-            raceResults: [],
-            driverNames: [],
-        },  
-        tyBottomTeam = {
-            teamTotalPoints: 0,
-            raceResults: [],
-            driverNames: [],
-        },
-        kaylaBottomTeam = {
-            teamTotalPoints: 0,
-            raceResults: [],
-            driverNames: [],
-        },
+            {
+                teamTotalPoints: 0,
+                raceResults: [],
+                driverNames: [],
+            },  
+            {
+                teamTotalPoints: 0,
+                raceResults: [],
+                driverNames: [],
+            },
+            {
+                teamTotalPoints: 0,
+                raceResults: [],
+                driverNames: [],
+            },
         ],
     };
 
@@ -270,6 +319,7 @@
                 var raceName = myStuff.seasonRaces[n].raceName;
                 var driverName = myStuff.seasonRaces[n].Results[k].Driver.givenName + " " + myStuff.seasonRaces[n].Results[k].Driver.familyName
                 var name = myStuff.seasonRaces[n].Results[k].Driver.code;
+                var racePosition = parseInt(myStuff.seasonRaces[n].Results[k].position);
                 var points = parseInt(myStuff.seasonRaces[n].Results[k].points);
                 var gridPosition = myStuff.seasonRaces[n].Results[k].grid;
                 var weekendPoints = points + gridPoints();
@@ -309,6 +359,7 @@
                         race: raceName,
                         driverName: driverName,
                         code: name,
+                        racePosition: racePosition,
                         racePoints: points,
                         gridPosition: gridPosition,
                         gridPoints: gridPoints(),
@@ -429,6 +480,7 @@
     }
 
     function teamDriveBreakDown(){
+        const element = document.getElementById("driverPoints")
         
         function compare(a,b){
             const aCode = a.code
@@ -444,15 +496,128 @@
         };
 
         
-        console.log("sort",myStuff.topTeams[0].raceResults.sort(compare));
-        myStuff.topTeams.forEach(function(item,r) {
-            myStuff.topTeams[r].raceResults.sort(compare) 
-            myStuff.topTeams[r].raceResults.forEach(function(item,s) {
-                  
-                // pointBreakDownTable += 
+        // console.log("sort",myStuff.topTeams[0].raceResults.sort(compare));
+        // let memo = {};
+
+        // myStuff.topTeams.forEach(function(team){
+        //      console.log("CURRENT TEAM"); 
+        //     team.raceResults.forEach(function(result){
+        //         console.log("RACE RESULT");
+        //         console.log(result.code);
+
+        //         // memo.code = result.code;
+        //         //string interpolation ${}
+        //         //How to assign property to an object using string
+        //         console.log("poo", memo[result.code]);
+                
+        //         if(!memo[result.code]){
+        //             memo[result.code] = [];
+        //         }
+                
+        //         memo[result.code].push(result);
+
+        //     });
+        // });
+        // console.log("outside", memo);
+        // return;
+
+        myStuff.topTeams.forEach(function(team) {
+            team.raceResults.sort(compare) 
+            team.raceResults.forEach(function(result,s) {
+                // console.log(myStuff.topTeams[r].raceResults[s].code);
+                // driverScoreCard += 
+                // var indexMinusOne = s-1; 
+
+                // console.log(indexMinusOne);
+                // console.log(myStuff.topTeams[r].raceResults[s].code, myStuff.topTeams[r].raceResults[indexMinusOne].code);
+
+                // console.log("outside", myStuff.topTeams[r].raceResults[s].code);
+                // console.log("foo",  myStuff.topTeams[r].raceResults[s]);
+                console.log(result);
+                if(s === 0){
+                    var driverName = result.code
+                    createNewCard();
+                    fillExistingCard();
+                    // console.log("s=0", driverName);
+                    // console.log(driverName, myStuff.topTeams[r].raceResults[s].code);
+                }
+                else if(result.code === driverName){
+                    // console.log("inside", s);
+                    // console.log(driverName, myStuff.topTeams[r].raceResults[s].code);
+                    fillExistingCard();
+                }
+                else if (result.code != driverName){
+                    endNameCard();
+                    createNewCard();
+                    fillExistingCard();
+                    var driverName = result.code
+                }
+            });
         });
-        });
-        
+     
+        function createNewCard(){
+            // wasCardMade = true;
+            console.log("make new card");
+            driverScoreCard += 
+            ` 
+            <table BORDER=2>
+            <caption>Team Name</caption>
+            <thead>
+                <tr>
+                <td colspan="2">
+                <strong>Name</strong><br>
+                Construction<br>
+                nationality<br>
+                </td>
+                <td colspan="2">
+                <img src="./images/LEC.png" alt="errorloading">
+                </td>
+                </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th>Race Name</th>
+                <th>Race Place</th>
+                <th>Race Points</th>
+                <th>Grid Position</th>
+                <th>Qualifying Points</th>
+            </tr>
+            `
+
+        }
+
+        function fillExistingCard() {
+            console.log('fill info');
+            driverScoreCard += 
+            `
+            <tr>
+            <th>###</th>
+            <th>5</th>
+            <th>lol</th>
+            <th>G55</th>
+            <th>12</th>
+            </tr>
+            `
+        }
+
+        function endNameCard(){
+            driverScoreCard +=   
+            `
+            </tbody>
+            <tfoot>
+                <tr>
+                <th colspan="3">Grand Total</th>
+                <td>Driver total points</td>
+                </tr>
+            </tfoot>
+            </table>
+            `  
+        }
+
+        element.innerHTML = 
+        `
+        ${driverScoreCard}
+        `
     }
 
 
